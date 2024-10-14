@@ -3,6 +3,7 @@ package id.my.hendisantika.keycloaktestcontainer;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import io.restassured.RestAssured;
 import org.apache.http.client.utils.URIBuilder;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.slf4j.Logger;
@@ -24,6 +25,9 @@ import javax.annotation.PostConstruct;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
 
 /**
  * Created by IntelliJ IDEA.
@@ -101,6 +105,18 @@ public class KeyCloakTestContainerTestWithDefaultSetup {
             LOGGER.error("Can't obtain an access token from Keycloak!", e);
         }
         return null;
+    }
+
+    @Test
+    void givenAuthenticatedUser_whenGetMe_shouldReturnMyInfo() {
+        given().header("Authorization", getBearerToken_v2())
+                .when()
+                .get("/users/me")
+                .then()
+                .body("username", equalTo("admin"))
+        /*.body("lastName", equalTo(""))
+        .body("firstName", equalTo("admin"))
+        .body("email", equalTo("test-user@howtodoinjava.com"))*/;
     }
 
 }
