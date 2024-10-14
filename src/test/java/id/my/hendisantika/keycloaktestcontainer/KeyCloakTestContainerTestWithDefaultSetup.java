@@ -2,6 +2,7 @@ package id.my.hendisantika.keycloaktestcontainer;
 
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import io.restassured.RestAssured;
+import jakarta.annotation.PostConstruct;
 import org.apache.http.client.utils.URIBuilder;
 import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.Keycloak;
@@ -21,7 +22,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import javax.annotation.PostConstruct;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -44,9 +44,11 @@ import static org.hamcrest.Matchers.equalTo;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class KeyCloakTestContainerTestWithDefaultSetup {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KeyCloakTestContainerTest.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(KeyCloakTestContainerTestWithDefaultSetup.class.getName());
+
     @Container
-    static KeycloakContainer keycloak = new KeycloakContainer();
+    static KeycloakContainer keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:26.0");
+
     @LocalServerPort
     private int port;
 
@@ -58,7 +60,7 @@ public class KeyCloakTestContainerTestWithDefaultSetup {
     @DynamicPropertySource
     static void registerResourceServerIssuerProperty(DynamicPropertyRegistry registry) {
         registry.add("spring.security.oauth2.resourceserver.jwt.issuer-uri",
-                () -> keycloak.getAuthServerUrl() + "realms/master");
+                () -> keycloak.getAuthServerUrl() + "/realms/master");
     }
 
     protected String getBearerToken_v2() {

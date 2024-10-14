@@ -2,6 +2,7 @@ package id.my.hendisantika.keycloaktestcontainer;
 
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import io.restassured.RestAssured;
+import jakarta.annotation.PostConstruct;
 import org.apache.http.client.utils.URIBuilder;
 import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.Keycloak;
@@ -21,7 +22,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import javax.annotation.PostConstruct;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -47,8 +47,7 @@ public class KeyCloakTestContainerTest {
             = LoggerFactory.getLogger(KeyCloakTestContainerTest.class.getName());
     @Container
     static KeycloakContainer keycloak
-//            = new KeycloakContainer("quay.io/keycloak/keycloak:26.0")
-            = new KeycloakContainer()
+            = new KeycloakContainer("quay.io/keycloak/keycloak:26.0")
             .withRealmImportFile("keycloak/realm-export.json");
     @LocalServerPort
     private int port;
@@ -56,7 +55,7 @@ public class KeyCloakTestContainerTest {
     @DynamicPropertySource
     static void registerResourceServerIssuerProperty(DynamicPropertyRegistry registry) {
         registry.add("spring.security.oauth2.resourceserver.jwt.issuer-uri",
-                () -> keycloak.getAuthServerUrl() + "realms/howtodoinjava-realm");
+                () -> keycloak.getAuthServerUrl() + "/realms/howtodoinjava-realm");
     }
 
     @PostConstruct
@@ -85,7 +84,7 @@ public class KeyCloakTestContainerTest {
     protected String getBearerToken() {
         try {
             URI authorizationURI = new URIBuilder(keycloak.getAuthServerUrl()
-                    + "realms/howtodoinjava-realm/protocol/openid-connect/token").build();
+                    + "/realms/howtodoinjava-realm/protocol/openid-connect/token").build();
             WebClient webclient = WebClient.builder().build();
             MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
             formData.put("grant_type", Collections.singletonList("password"));
