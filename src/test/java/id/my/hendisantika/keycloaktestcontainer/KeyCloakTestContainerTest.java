@@ -2,6 +2,8 @@ package id.my.hendisantika.keycloaktestcontainer;
 
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import io.restassured.RestAssured;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,5 +48,23 @@ public class KeyCloakTestContainerTest {
     @PostConstruct
     public void init() {
         RestAssured.baseURI = "http://localhost:" + port;
+    }
+
+    protected String getBearerToken_v2() {
+        try (Keycloak keycloakAdminClient = KeycloakBuilder.builder()
+                .serverUrl(keycloak.getAuthServerUrl())
+                .realm("master")
+                .clientId("admin-cli")
+                .username(keycloak.getAdminUsername())
+                .password(keycloak.getAdminPassword())
+                .build()) {
+
+            String access_token = keycloakAdminClient.tokenManager().getAccessToken().getToken();
+
+            return "Bearer " + access_token;
+        } catch (Exception e) {
+            LOGGER.error("Can't obtain an access token from Keycloak!", e);
+        }
+        return null;
     }
 }
