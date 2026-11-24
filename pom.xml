@@ -15,7 +15,7 @@
     <description>spring-boot-keycloak-testcontainer</description>
     <properties>
         <java.version>25</java.version>
-        <testcontainers-keycloak.version>4.4.0</testcontainers-keycloak.version>
+        <testcontainers-keycloak.version>4.4.1</testcontainers-keycloak.version>
         <rest-assured.version>6.3.0</rest-assured.version>
     </properties>
     <dependencies>
